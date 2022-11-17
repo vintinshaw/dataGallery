@@ -18,6 +18,22 @@ segmap = {
 }
 
 
+def increment_counter(files):
+    st.session_state.index = (st.session_state.index + 1) % len(files)
+
+
+def decrement_counter(files):
+    st.session_state.index = (st.session_state.index - 1) % len(files)
+
+
+def set_counter_slider():
+    st.session_state.index = st.session_state.mannul_slider
+
+
+def set_counter_input():
+    st.session_state.index = st.session_state.mannul_input
+
+
 def getDist_P2P(Point0, PointA):
     distance = math.pow((Point0[0] - PointA[0]), 2) + math.pow((Point0[1] - PointA[1]), 2)
     distance = math.sqrt(distance)
@@ -66,24 +82,14 @@ def main():
     loadAnno = st.sidebar.radio('Choose mask type:', ('None', 'Pred', 'GT'), index=2)
     if 'index' not in st.session_state:
         st.session_state['index'] = 0
-    # placeholder = st.empty()
-    col1, col2, col3, = st.sidebar.columns(3)
-    prevPicButton = col1.button('prev')
-    if prevPicButton:
-        st.session_state.index = (st.session_state.index - 1) % len(files)
+    col1, col2, col3, = st.sidebar.columns([1, 2, 1])
+    col1.button('prev', on_click=decrement_counter, args=(files,))
+    col2.number_input('Mannel Index', value=st.session_state.index, min_value=0, max_value=len(files) - 1,
+                      on_change=set_counter_input, key='mannul_input', label_visibility="collapsed")
+    col3.button('next', on_click=increment_counter, args=(files,))
+    st.sidebar.slider('Select Pic index:', value=st.session_state.index, min_value=0, max_value=len(files) - 1,
+                      on_change=set_counter_slider, key='mannul_slider', label_visibility="collapsed")
 
-    mannul_input = col2.empty()
-    # st.session_state.index = int(col2.text_input('Choose Pic index:',st.session_state.index+1,label_visibility="collapsed"))
-
-    nextPicButton = col3.button('next')
-    if nextPicButton:
-        st.session_state.index = (st.session_state.index + 1) % len(files)
-
-    # mannul_input = col2.text_input('', st.session_state.index+1, label_visibility="collapsed")
-    mannul_input.text_input('Mannel Index', st.session_state.index, label_visibility="collapsed")
-
-    st.session_state.index = st.sidebar.slider('Select Pic index:', 0, len(files) - 1, st.session_state.index,
-                                               label_visibility="collapsed")
     img = cv2.imread(os.path.join(Folder, files[st.session_state.index] + '.png'))
 
     if loadAnno == 'None':
