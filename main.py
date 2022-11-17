@@ -56,10 +56,8 @@ def LoadAnno(img, MASKFolder, files):
 
 def main():
     st.set_page_config(layout="wide")
-    # st.sidebar.subheader('Choose Folder:')
     Folder = st.sidebar.text_input('Choose Folder:', '/home/vintinshaw/ViT-Adapter/segmentation/data/APD_10976/images')
-    # st.sidebar.subheader('Choose splitFile:')
-    splitFile = st.sidebar.text_input('Choose splitFile:',
+    splitFile = st.sidebar.text_input('Choose splitFile:(可以为空)',
                                       '/home/vintinshaw/ViT-Adapter/segmentation/data/APD_10976/splits/test.txt')
     files = []
     if os.path.isfile(splitFile) and os.path.exists(splitFile):
@@ -69,16 +67,11 @@ def main():
     else:
         files = os.listdir(Folder)
         files = [os.path.splitext(i)[0] for i in files]
-    # st.write(files)
-    # st.sidebar.write(f'The current Folder has {len(files)} Pics:')
-    # st.sidebar.subheader('Choose GT json folder:')
     GTFolder = st.sidebar.text_input('Choose GT json folder', '/dataRep3/APD/APD/json')
-    # st.sidebar.subheader('Choose Pred json folder:')
     PREDFolder = st.sidebar.text_input('Choose Pred json folder', '/home/vintinshaw/ViT-Adapter/segmentation/json_dir')
 
     # loadpred=st.sidebar.checkbox("Pred",value=True)
     # loadgt=st.sidebar.checkbox("GT")
-    # st.sidebar.subheader('Choose mask type:')
     loadAnno = st.sidebar.radio('Choose mask type:', ('None', 'Pred', 'GT'), index=2)
     if 'index' not in st.session_state:
         st.session_state['index'] = 0
