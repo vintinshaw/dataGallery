@@ -5,6 +5,7 @@ import pandas as pd
 import json
 import os
 from annotated_text import annotated_text
+import math
 
 segmap = {
     "crack": [0, 0, 255],
@@ -17,14 +18,24 @@ segmap = {
 }
 
 
+def getDist_P2P(Point0, PointA):
+    distance = math.pow((Point0[0] - PointA[0]), 2) + math.pow((Point0[1] - PointA[1]), 2)
+    distance = math.sqrt(distance)
+    return int(distance)
+
+
 def LoadAnno(img, MASKFolder, files):
     with open(os.path.join(MASKFolder, files[st.session_state.index] + '.json'), 'r') as obj:
         dict = json.load(obj)
         for shape in dict['shapes']:
             if shape['label'] in segmap:
-                pts = np.array(shape['points'], np.int32)
-                # cv2.polylines(img, [pts], True, segmap[shape['label']], 1)
-                cv2.fillPoly(img, [pts], segmap[shape['label']])
+                if shape['shape_type'] == 'polygon':
+                    pts = np.array(shape['points'], np.int32)
+                    # cv2.polylines(img, [pts], True, segmap[shape['label']], 1)
+                    cv2.fillPoly(img, [pts], segmap[shape['label']])
+                elif shape['shape_type'] == 'circle':
+                    pts = np.array(shape['points'], np.int32)
+                    cv2.circle(img, pts[0], getDist_P2P(pts[0], pts[1]), segmap[shape['label']], -1)
 
 
 def main():
